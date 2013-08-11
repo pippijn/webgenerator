@@ -11,16 +11,16 @@ HTML	:= $(patsubst content%,home%,$(PODS:.pod=.html))
 DATA	:= $(patsubst content%,home%,$(filter-out %.pod,$(INPUTS)))
 
 # Generator script and its dependencies.
-DEPEND	:= $(THIS)/generate $(shell find $(THIS)/lib -type f)
+DEPEND	:= $(THIS)generate $(shell find $(THIS)lib -type f)
 
-build: $(THIS)/generate $(PODS) $(DATA)
+build: $(THIS)generate $(PODS) $(DATA) dirs
 	$< $(filter %.pod,$(PODS))
 	find home -type f -exec chmod 0644 {} ';'
 	find home -type d -exec chmod 0755 {} ';'
 
 dirs: clean
 	mkdir -p $(DIRS)
-	cp -a $(THIS)/content/* home/
+	cp -a $(THIS)content/* home/
 
 home/%: content/% dirs
 	cp $< $@
