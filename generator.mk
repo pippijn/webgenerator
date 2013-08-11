@@ -1,14 +1,19 @@
 THIS	:= $(dir $(lastword $(MAKEFILE_LIST)))
 
 # All content files.
-INPUTS	:= $(shell find content -type f)
+CONTENT	:= $(shell find content -type f)
 DIRS	:= $(patsubst content%,home%,$(shell find content -type d))
+DIRS	+= $(patsubst external%,home%,$(shell find external -type d))
 # POD files.
-PODS	:= $(filter %.pod,$(INPUTS))
+PODS	:= $(filter %.pod,$(CONTENT))
+PODS	+= $(filter %.pod,$(EXTERNAL))
 # HTML outputs.
-HTML	:= $(patsubst content%,home%,$(PODS:.pod=.html))
+HTML	:= $(PODS:.pod=.html)
+HTML	:= $(patsubst content%,home%,$(HTML))
+HTML	:= $(patsubst external%,home%,$(HTML))
 # Additional non-preprocessed content.
-DATA	:= $(patsubst content%,home%,$(filter-out %.pod,$(INPUTS)))
+DATA	:= $(patsubst content%,home%,$(filter-out %.pod,$(CONTENT)))
+DATA	+= $(patsubst external%,home%,$(filter-out %.pod,$(EXTERNAL)))
 
 # Generator script and its dependencies.
 DEPEND	:= $(THIS)generate $(shell find $(THIS)lib -type f)
@@ -23,6 +28,9 @@ dirs: clean
 	cp -a $(THIS)content/* home/
 
 home/%: content/% dirs
+	cp $< $@
+
+home/%: external/% dirs
 	cp $< $@
 
 clean:

@@ -32,7 +32,7 @@ sub parse {
 for (@ARGV) {
    my $content = parse;
 
-   my ($page) = m|^content/(.+)\.\w+$|;
+   my ($page) = m!^(?:content|external)/(.+)\.\w+$!;
 
    my $cur = $page;
    $cur =~ s/\/index$//;
