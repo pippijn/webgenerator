@@ -29,6 +29,18 @@ sub parse {
    }
 }
 
+sub process {
+   my ($wrapper, $vars, $page, $ext) = @_;
+
+   my $output;
+   $template->process ($wrapper, $vars, \$output)
+      or die $template->error;
+
+   open my $fh, '>', "home/$page.$ext"
+      or die "home/$page.$ext: $!";
+   print $fh $output;
+}
+
 for (@ARGV) {
    my $content = parse;
 
@@ -49,11 +61,5 @@ for (@ARGV) {
       updated => (Date::Format::time2str "%C", (stat $_)[9]),
    };
 
-   my $output;
-   $template->process ($wrapper, $vars, \$output)
-      or die $template->error;
-
-   open my $fh, '>', "home/$page.html"
-      or die "home/$page.html: $!";
-   print $fh $output;
+   process $wrapper, $vars, $page, "html";
 }
