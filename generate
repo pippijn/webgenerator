@@ -1,0 +1,59 @@
+#!/usr/bin/env perl
+
+use common::sense;
+use Dir::Self;
+use constant THIS => __DIR__ . '/lib';
+use lib THIS;
+
+use Date::Format;
+use Pod::POM;
+use Template;
+use View::HTML;
+use View::POD;
+use View::POD::TOC \@View::POD::toc;
+
+my $template = new Template { ABSOLUTE => 1 };
+my $stash    = do 'config.pm';
+my $wrapper  = THIS . '/wrapper.tt';
+
+sub parse {
+   if (/\.pod$/) {
+      my $parser = new Pod::POM;
+      my $pom = $parser->parse_file ($_);
+
+      undef @View::POD::toc;
+      View::POD::TOC->print ($pom);
+      return View::POD->print ($pom);
+   } else {
+      die "Unknown file type: $_"
+   }
+}
+
+for (@ARGV) {
+   my $content = parse;
+
+   my ($page) = m|^content/(.+)\.\w+$|;
+
+   my $cur = $page;
+   $cur =~ s/\/index$//;
+
+   my $title = $cur;
+   $title =~ s/\// \/ /g;
+   $title =~ s/\b\w/\u$&/g;
+
+   my $vars = {
+      %$stash,
+      title   => $title,
+      menubar => (View::HTML::menu "/home/$cur", $stash->{menubar}, '/home/'),
+      content => $content,
+      updated => (Date::Format::time2str "%C", (stat $_)[9]),
+   };
+
+   my $output;
+   $template->process ($wrapper, $vars, \$output)
+      or die $template->error;
+
+   open my $fh, '>', "home/$page.html"
+      or die "home/$page.html: $!";
+   print $fh $output;
+}
