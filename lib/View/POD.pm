@@ -4,6 +4,7 @@ use common::sense;
 use base 'Pod::POM::View';
 
 our @toc;
+our $base;
 
 use Pod::POM;
 
@@ -162,7 +163,7 @@ my %formatter = (
    img     => sub {
       chomp $_[1];
       my @p = split ' ', $_[1], 2;
-      "<div class='centered-image'><div><img src='$p[0]' alt='$p[1]'/></div>$p[1]</div>"
+      "<div class='centered-image'><div><img src=\"$base$p[0]\" alt='$p[1]'/></div>$p[1]</div>"
    },
 );
 

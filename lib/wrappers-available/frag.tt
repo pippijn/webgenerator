@@ -1,0 +1,17 @@
+<html>
+
+   <title>[% title %]</title>
+
+   <div id="menubar">
+      [% menubar %]
+   </div>
+
+   <div id="content">
+      [% content %]
+   </div> 
+
+   <div id="updated">
+      Last updated [% updated %]
+   </div> 
+
+</html>

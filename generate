@@ -12,9 +12,9 @@ use View::HTML;
 use View::POD;
 use View::POD::TOC \@View::POD::toc;
 
-my $template = new Template { ABSOLUTE => 1 };
-my $stash    = do 'config.pm';
-my $wrapper  = THIS . '/wrapper.tt';
+my $template		= new Template { ABSOLUTE => 1 };
+my $stash			= do 'config.pm';
+my @wrappers		= glob THIS . '/wrappers-enabled/*.tt';
 
 sub parse {
    if (/\.pod$/) {
@@ -42,8 +42,6 @@ sub process {
 }
 
 for (@ARGV) {
-   my $content = parse;
-
    my ($page) = m!^(?:content|external)/(.+)\.\w+$!;
 
    my $cur = $page;
@@ -53,6 +51,9 @@ for (@ARGV) {
    $title =~ s/\// \/ /g;
    $title =~ s/\b\w/\u$&/g;
 
+   $View::POD::base = "/home/$cur/";
+   my $content = parse;
+
    my $vars = {
       %$stash,
       title   => $title,
@@ -61,5 +62,8 @@ for (@ARGV) {
       updated => (Date::Format::time2str "%C", (stat $_)[9]),
    };
 
-   process $wrapper, $vars, $page, "html";
+   for (@wrappers) {
+      my ($ext) = /(\w+)\.tt$/;
+      process $_, $vars, $page, $ext;
+   }
 }
