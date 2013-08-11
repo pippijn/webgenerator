@@ -20,6 +20,7 @@ build: $(THIS)/generate $(PODS) $(DATA)
 
 dirs: clean
 	mkdir -p $(DIRS)
+	cp -a $(THIS)/content/* home/
 
 home/%: content/% dirs
 	cp $< $@

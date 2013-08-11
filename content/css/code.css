@@ -1,0 +1,86 @@
+span.comment {
+   color: #cd8b00;
+   font-style: italic;
+}
+
+span.string {
+   color: #008000;
+}
+
+span.number {
+   /*color: #f88887;*/
+   color: #ff0040;
+}
+
+/* Keywords */
+span.key1 {
+   /*color: #00cdff;*/
+   color: #a42a29;
+   font-weight: bold;
+}
+
+/* Preprocessor */
+span.key2 {
+   /*color: #01ce8d;*/
+   color: #9f1fee;
+   font-weight: bold;
+}
+
+/* Data types */
+span.key3 {
+   /*color: #ff8bff;*/
+   color: #2e8a57;
+   font-weight: bold;
+}
+
+/* Constants */
+span.key4 {
+   /*color: #fecc8d;*/
+   color: #ff00fe;
+   font-weight: bold;
+}
+
+/* Classes */
+span.key5 {
+   /*color: #d0d000;*/
+   color: #ab00ab;
+   font-weight: bold;
+}
+
+span.key6 {
+   color: #0000c0;
+}
+
+span.key7 {
+   color: #d0d000;
+}
+
+span.key8 {
+   color: #d0d000;
+}
+
+pre.code-dark {
+   background-color: #2e2e2e;
+   color: #fff;
+   font: 90% DejaVu Sans Mono, monospace;
+   white-space: pre;
+}
+
+pre.code-block, code {
+   /*background-color: #2e2e2e;
+   color: #fff;*/
+   font: 90% DejaVu Sans Mono, monospace;
+   white-space: pre;
+}
+
+ div#code0
+,div#code1
+,div#code2
+,div#code3
+,div#code4
+,div#code5
+,div#code6
+,div#code7
+{
+   display: none;
+}
