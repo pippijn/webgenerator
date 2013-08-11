@@ -3,7 +3,9 @@ THIS	:= $(dir $(lastword $(MAKEFILE_LIST)))
 # All content files.
 CONTENT	:= $(shell find content -type f)
 DIRS	:= $(patsubst content%,home%,$(shell find content -type d))
+ifneq ($(wildcard external),)
 DIRS	+= $(patsubst external%,home%,$(shell find external -type d))
+endif
 # POD files.
 PODS	:= $(filter %.pod,$(CONTENT))
 PODS	+= $(filter %.pod,$(EXTERNAL))
