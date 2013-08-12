@@ -34,7 +34,7 @@ clean:
 
 define copycommon
 
-external.stamp: $(patsubst content%,external%,$2)
+external.stamp: $(patsubst $1%,external%,$2)
 $(patsubst $1%,external%,$2): $2
 	@mkdir -p $$(@D)
 	ln -sf $$(realpath $$<) $$@
