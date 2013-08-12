@@ -10,17 +10,17 @@ HTML	= $(patsubst external%,home%,$(addsuffix .html,$(basename $(PODS))))
 # Additional non-preprocessed content.
 DATA	= $(patsubst external%,home%,$(filter-out %.shtml,$(filter-out %.pod,$(CONTENT))))
 
-home/%.html: external/%.pod $(THIS)generate $(DIRS)
+# Generator script and its dependencies.
+DEPEND	:= $(THIS)generate $(shell find $(THIS)lib -type f)
+
+home/%.html: external/%.pod $(DEPEND) $(DIRS)
 	$(THIS)generate $<
 
-home/%.html: external/%.shtml $(THIS)generate $(DIRS)
+home/%.html: external/%.shtml $(DEPEND) $(DIRS)
 	$(THIS)generate $<
 
 home/%: external/% $(DIRS)
 	cp $< $@
-
-# Generator script and its dependencies.
-DEPEND	:= $(THIS)generate $(shell find $(THIS)lib -type f)
 
 build: $(HTML) $(DATA) $(DIRS)
 	find home -type f -exec chmod 0644 {} ';'

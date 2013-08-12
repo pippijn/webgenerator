@@ -33,7 +33,7 @@ sub highlight {
       open my $in, '<', $xhtml or die $!;
       while (my $line = <$in>) {
          if ($line =~ /^<pre/) {
-            $line =~ s/ id=/ class=/;
+            $line =~ s/ id='vimCodeElement'/ class='code-block'/;
             push @data, $line;
             last;
          }
