@@ -7,13 +7,50 @@ our @toc;
 our $base;
 
 use Pod::POM;
+use File::Temp;
 
 # View methods
 
+sub highlight {
+   my ($type, $text) = @_;
 
-use Text::Highlight;
+   my $xhtml = do {
+      my $fh = new File::Temp (TEMPLATE => '/tmp/vimhlXXXXXX');
+      print $fh $text;
 
-my $th = new Text::Highlight wrapper => "<pre class=\"code-block\">\%s</pre>";
+      my $xhtml = $fh->filename . '.xhtml';
+      open my $null, '-|', "vim", "-enX", $fh->filename,
+         "+set syn=$type",
+         "+runtime! syntax/2html.vim",
+         "+w $xhtml",
+         "+qa!";
+
+      $xhtml;
+   };
+
+   my $data = do {
+      my @data;
+      open my $in, '<', $xhtml or die $!;
+      while (my $line = <$in>) {
+         if ($line =~ /^<pre/) {
+            $line =~ s/ id=/ class=/;
+            push @data, $line;
+            last;
+         }
+      }
+      while (my $line = <$in>) {
+         push @data, $line;
+         if ($line =~ /^<\/pre>/) {
+            last;
+         }
+      }
+
+      join "", @data
+   };
+
+   #unlink $xhtml;
+   $data
+}
 
 my %format = (
    html => sub {
@@ -22,8 +59,7 @@ my %format = (
    },
    code => sub {
       my ($text, @options) = @_;
-      my @code = $th->highlight (type => $options[0], code => $text);
-      $code[0]
+      highlight $options[0], $text
    },
    small => sub {
       my ($text, @options) = @_;

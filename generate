@@ -24,6 +24,8 @@ sub parse {
       undef @View::POD::toc;
       View::POD::TOC->print ($pom);
       return View::POD->print ($pom);
+   } elsif (/\.shtml$/) {
+      return do { local $/; open my $fh, '<', $_ or die "$_: $!"; <$fh> };
    } else {
       die "Unknown file type: $_"
    }

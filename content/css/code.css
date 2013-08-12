@@ -84,3 +84,23 @@ pre.code-block, code {
 {
    display: none;
 }
+
+pre.vimCodeElement {
+	margin: 0 15px 18px 10px;
+   color: #ffffff;
+   background-color: #262626;
+   padding-top: 1em;
+   white-space: pre-wrap;
+}
+
+.Comment { color: #af5f00; font-style: italic; }
+.Constant { color: #ffaf5f; }
+.Identifier { color: #af5f5f; }
+.Include { color: #00af00; }
+.Number { color: #ff5f5f; }
+.PreProc { color: #00af5f; }
+.SpecialChar { color: #af5fff; background-color: #262626; padding-bottom: 1px; }
+.Special { color: #af5fff; }
+.Statement { color: #00afff; }
+.String { color: #ffaf5f; background-color: #262626; padding-bottom: 1px; }
+.Type { color: #ff5fff; }
