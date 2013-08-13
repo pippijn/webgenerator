@@ -11,7 +11,7 @@ HTML	= $(patsubst external%,home%,$(addsuffix .html,$(basename $(PODS))))
 DATA	= $(patsubst external%,home%,$(filter-out %.shtml,$(filter-out %.pod,$(CONTENT))))
 
 # Generator script and its dependencies.
-DEPEND	:= $(THIS)generate $(shell find $(THIS)lib -type f)
+DEPEND	:= $(THIS)generate $(shell find $(THIS)lib -type f) config.pm
 
 home/%.html: external/%.pod $(DEPEND) $(DIRS)
 	$(THIS)generate $<
