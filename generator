@@ -96,29 +96,37 @@ timing {
       die "$_ was already parsed" if exists $structure{$File::Find::name};
 
       if (/\.pod$/) {
+
          my $parser = new View::Pod;
          $parser->{highlight} = \%highlight;
          $parser->parse ($_);
          $structure{$File::Find::name} = $parser;
+
       } elsif (/\.shtml/) {
+
          $structure{$File::Find::name}{current} = [do {
             local $/;
             open my $fh, '<', $_
                or die "$_: $!";
             <$fh>
          }];
+
       } elsif (-d) {
+
          # Make directory in home/
          my $name = $File::Find::name;
          $name =~ s/^staging/home/;
 
          mkdir "$PWD/$name" or die $!;
+
       } else {
+
          # Just copy it to the target directory.
          my $name = $File::Find::name;
          $name =~ s/^staging/home/;
 
          system "cp", $_, "$PWD/$name";
+
       }
    }, 'staging';
 } "Parsing source files";
