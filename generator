@@ -1,0 +1,162 @@
+#!/usr/bin/env perl
+
+use common::sense;
+use Dir::Self;
+use lib __DIR__ . '/lib';
+
+use Cwd 'abs_path';
+use Data::Dumper;
+use Date::Format;
+use File::Find;
+use File::Path qw/make_path remove_tree/;
+use File::Temp;
+use Template;
+use View::HTML;
+use View::Pod;
+use View::VIM;
+
+$Data::Dumper::Indent = 1;
+
+#####################################################################
+# :: Prepare staging directory.
+#####################################################################
+
+my $PWD = abs_path '.';
+remove_tree 'staging', 'home';
+mkdir 'staging';
+
+our $dir;
+our $prefix;
+sub link_file {
+   my $abspath = abs_path $_;
+   my ($relpath) = $abspath =~ /^$dir(.+)/;
+
+   my $file = "$PWD/staging/$prefix$relpath";
+   unlink $file if -f $file;
+
+   if (-d) {
+      make_path $file;
+   } else {
+      symlink $abspath, $file
+         or die "Could not link $file: $!";
+   }
+}
+
+# First, link common files to the staging directory.
+for (__DIR__ . '/content') {
+   local $dir = abs_path $_;
+   find \&link_file, $_;
+}
+
+
+# Then, link all project websites to the staging dir.
+if ($ARGV[0] eq '--projects') {
+   shift @ARGV;
+
+   for (glob "../../../*/*/.web") {
+      local $dir = abs_path $_;
+      local $prefix = 'projects/' . (m|([^/]+/[^/]+)/\.web$|)[0];
+
+      find \&link_file, $_;
+   }
+}
+
+
+# Finally, link the local files and overrides.
+for ('content') {
+   local $dir = abs_path $_;
+   find \&link_file, $_;
+}
+
+
+#####################################################################
+# :: Parse all source files.
+#####################################################################
+
+my %highlight;
+my %structure;
+find sub {
+   die "$_ was already parsed" if exists $structure{$File::Find::name};
+
+   if (/\.pod$/) {
+      my $parser = new View::Pod;
+      $parser->{highlight} = \%highlight;
+      $parser->parse ($_);
+      $structure{$File::Find::name} = $parser;
+   } elsif (/\.shtml/) {
+      $structure{$File::Find::name}{current} = [do {
+         local $/;
+         open my $fh, '<', $_
+            or die "$_: $!";
+         <$fh>
+      }];
+   } elsif (-d) {
+      # Make directory in home/
+      my $name = $File::Find::name;
+      $name =~ s/^staging/home/;
+
+      mkdir "$PWD/$name" or die $!;
+   } else {
+      # Just copy it to the target directory.
+      my $name = $File::Find::name;
+      $name =~ s/^staging/home/;
+
+      system "cp", $_, "$PWD/$name";
+   }
+}, 'staging';
+
+
+#####################################################################
+# :: Perform all syntax highlighting.
+#####################################################################
+
+for my $lang (keys %highlight) {
+   use XML::Generator escape => 'unescaped';
+   say "Highlighting $lang code...";
+
+   my @code = View::VIM::highlight $lang, @{ $highlight{$lang} };
+
+   for my $i (0 .. @{ $highlight{$lang} }) {
+      my $xml = $highlight{$lang}[$i][0];
+
+      @$xml = @{ pre ({ class => 'code-block' }, \($code[$i])) };
+   }
+}
+
+
+#####################################################################
+# :: Wrap them in the template and write to html.
+#####################################################################
+
+my $template = new Template { ABSOLUTE => 1 };
+my $stash = do "config.pm";
+my @wrappers = glob (__DIR__ . "/lib/wrappers-enabled/*.tt");
+
+for (keys %structure) {
+   my ($page) = m!^staging/(.+)\.\w+$!;
+
+   my $cur = $page;
+   $cur =~ s|/index$||;
+
+   my $title = $cur;
+   $title =~ s/\// \/ /g;
+   $title =~ s/\b\w/\u$&/g;
+
+   my $content = "@{ $structure{$_}{current} }";
+
+   my $vars = {
+      %$stash,
+      title   => $title,
+      menubar => (View::HTML::menu "/home/$cur", $stash->{menubar}, '/home/'),
+      content => $content,
+      updated => (Date::Format::time2str "%C", (stat $_)[9]),
+   };
+
+   for (@wrappers) {
+      my ($ext) = /(\w+)\.tt$/;
+
+      open my $fh, '>', "home/$page.$ext"
+         or die "home/$page.$ext: $!";
+      $template->process ($_, $vars, $fh);
+   }
+}
