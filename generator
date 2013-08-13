@@ -11,11 +11,27 @@ use File::Find;
 use File::Path qw/make_path remove_tree/;
 use File::Temp;
 use Template;
+use Time::HiRes 'gettimeofday';
 use View::HTML;
 use View::Pod;
 use View::VIM;
 
 $Data::Dumper::Indent = 1;
+
+#####################################################################
+# :: Timing code.
+#####################################################################
+
+sub timing (&@) {
+   my ($code, @msg) = @_;
+   print "@msg... ";
+
+   my $start = gettimeofday;
+   $code->();
+   my $end = gettimeofday;
+
+   printf "%.02fs\n", $end - $start;
+}
 
 #####################################################################
 # :: Prepare staging directory.
@@ -75,35 +91,37 @@ for ('content') {
 
 my %highlight;
 my %structure;
-find sub {
-   die "$_ was already parsed" if exists $structure{$File::Find::name};
+timing {
+   find sub {
+      die "$_ was already parsed" if exists $structure{$File::Find::name};
 
-   if (/\.pod$/) {
-      my $parser = new View::Pod;
-      $parser->{highlight} = \%highlight;
-      $parser->parse ($_);
-      $structure{$File::Find::name} = $parser;
-   } elsif (/\.shtml/) {
-      $structure{$File::Find::name}{current} = [do {
-         local $/;
-         open my $fh, '<', $_
-            or die "$_: $!";
-         <$fh>
-      }];
-   } elsif (-d) {
-      # Make directory in home/
-      my $name = $File::Find::name;
-      $name =~ s/^staging/home/;
+      if (/\.pod$/) {
+         my $parser = new View::Pod;
+         $parser->{highlight} = \%highlight;
+         $parser->parse ($_);
+         $structure{$File::Find::name} = $parser;
+      } elsif (/\.shtml/) {
+         $structure{$File::Find::name}{current} = [do {
+            local $/;
+            open my $fh, '<', $_
+               or die "$_: $!";
+            <$fh>
+         }];
+      } elsif (-d) {
+         # Make directory in home/
+         my $name = $File::Find::name;
+         $name =~ s/^staging/home/;
 
-      mkdir "$PWD/$name" or die $!;
-   } else {
-      # Just copy it to the target directory.
-      my $name = $File::Find::name;
-      $name =~ s/^staging/home/;
+         mkdir "$PWD/$name" or die $!;
+      } else {
+         # Just copy it to the target directory.
+         my $name = $File::Find::name;
+         $name =~ s/^staging/home/;
 
-      system "cp", $_, "$PWD/$name";
-   }
-}, 'staging';
+         system "cp", $_, "$PWD/$name";
+      }
+   }, 'staging';
+} "Parsing source files";
 
 
 #####################################################################
@@ -111,16 +129,23 @@ find sub {
 #####################################################################
 
 for my $lang (keys %highlight) {
-   use XML::Generator escape => 'unescaped';
-   say "Highlighting $lang code...";
+   my $count = scalar @{ $highlight{$lang} };
+   my $msg = sprintf "Highlighting %d %s snippet%s"
+      , $count
+      , $lang
+      , $count == 1 ? "" : "s"
+      ;
 
-   my @code = View::VIM::highlight $lang, @{ $highlight{$lang} };
+   timing {
+      use XML::Generator escape => 'unescaped';
+      my @code = View::VIM::highlight $lang, @{ $highlight{$lang} };
 
-   for my $i (0 .. @{ $highlight{$lang} }) {
-      my $xml = $highlight{$lang}[$i][0];
+      for my $i (0 .. @{ $highlight{$lang} }) {
+         my $xml = $highlight{$lang}[$i][0];
 
-      @$xml = @{ pre ({ class => 'code-block' }, \($code[$i])) };
-   }
+         @$xml = @{ pre ({ class => 'code-block' }, \($code[$i])) };
+      }
+   } $msg 
 }
 
 

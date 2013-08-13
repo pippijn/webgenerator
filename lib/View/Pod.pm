@@ -40,7 +40,6 @@ sub pop_level {
 
 sub parse {
    my ($self, $file) = @_;
-   say (Cwd::abs_path $file);
    $self->parse_from_file ($file);
 }
 
