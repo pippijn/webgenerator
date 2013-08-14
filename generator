@@ -161,35 +161,37 @@ for my $lang (sort keys %highlight) {
 # :: Wrap them in the template and write to html.
 #####################################################################
 
-my $template = new Template { ABSOLUTE => 1 };
-my $stash = do "config.pm";
-my @wrappers = glob (__DIR__ . "/lib/wrappers-enabled/*.tt");
+timing {
+   my $template = new Template { ABSOLUTE => 1 };
+   my $stash = do "config.pm";
+   my @wrappers = glob (__DIR__ . "/lib/wrappers-enabled/*.tt");
 
-for (keys %structure) {
-   my ($page) = m!^staging/(.+)\.\w+$!;
+   for (keys %structure) {
+      my ($page) = m!^staging/(.+)\.\w+$!;
 
-   my $cur = $page;
-   $cur =~ s|/index$||;
+      my $cur = $page;
+      $cur =~ s|/index$||;
 
-   my $title = $cur;
-   $title =~ s/\// \/ /g;
-   $title =~ s/\b\w/\u$&/g;
+      my $title = $cur;
+      $title =~ s/\// \/ /g;
+      $title =~ s/\b\w/\u$&/g;
 
-   my $content = "@{ $structure{$_}{current} }";
+      my $content = "@{ $structure{$_}{current} }";
 
-   my $vars = {
-      %$stash,
-      title   => $title,
-      menubar => (View::HTML::menu "/home/$cur", $stash->{menubar}, '/home/'),
-      content => $content,
-      updated => (Date::Format::time2str "%C", (stat $_)[9]),
-   };
+      my $vars = {
+         %$stash,
+         title   => $title,
+         menubar => (View::HTML::menu "/home/$cur", $stash->{menubar}, '/home/'),
+         content => $content,
+         updated => (Date::Format::time2str "%C", (stat $_)[9]),
+      };
 
-   for (@wrappers) {
-      my ($ext) = /(\w+)\.tt$/;
+      for (@wrappers) {
+         my ($ext) = /(\w+)\.tt$/;
 
-      open my $fh, '>', "home/$page.$ext"
-         or die "home/$page.$ext: $!";
-      $template->process ($_, $vars, $fh);
+         open my $fh, '>', "home/$page.$ext"
+            or die "home/$page.$ext: $!";
+         $template->process ($_, $vars, $fh);
+      }
    }
-}
+} "Writing HTML";
