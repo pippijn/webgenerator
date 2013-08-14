@@ -10,3 +10,9 @@ build: $(DEPEND)
 	$< $(FLAGS)
 	find home -type f -exec chmod 0644 {} ';'
 	find home -type d -exec chmod 0755 {} ';'
+	$(MAKE) post-build
+
+home/%.txt: staging/%.pod
+	pod2text $< $@
+
+post-build:
