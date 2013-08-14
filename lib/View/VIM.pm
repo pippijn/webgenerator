@@ -30,6 +30,8 @@ sub highlight_one {
          push @data, $line;
       }
 
+      pop @data while $data[$#data] =~ /^\s*$/;
+
       join "", @data
    };
 
@@ -40,6 +42,21 @@ sub highlight_one {
 
 sub highlight {
    my ($type, @text) = @_;
+
+   for (@text) {
+      die "No tabs supported" if /\t/;
+
+      my $indent = 128;
+      for (split "\n", $_->[2]) {
+         if (/^( +)[^ ]/) {
+            my $spaces = length $1;
+            $indent = $spaces < $indent ? $spaces : $indent;
+         }
+      }
+
+      $indent = ' ' x $indent;
+      $_->[2] =~ s/(?:^$indent|(\n)$indent)/$1/g;
+   }
 
    my $combined = join "\000\n", map { $_->[2] } @text;
    split '\^@', highlight_one $type, $combined

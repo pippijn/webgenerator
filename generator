@@ -136,7 +136,7 @@ timing {
 # :: Perform all syntax highlighting.
 #####################################################################
 
-for my $lang (keys %highlight) {
+for my $lang (sort keys %highlight) {
    my $count = scalar @{ $highlight{$lang} };
    my $msg = sprintf "Highlighting %d %s snippet%s"
       , $count
