@@ -55,11 +55,17 @@ sub highlight {
       }
 
       $indent = ' ' x $indent;
-      $_->[2] =~ s/(?:^$indent|(\n)$indent)/$1/g;
+      $_->[2] =~ s/(?:^\n*$indent|(\n)$indent)/$1/g;
+      $_->[2] =~ s/\n+$//g;
    }
 
-   my $combined = join "\000\n", map { $_->[2] } @text;
-   split '\^@', highlight_one $type, $combined
+   my $combined = join "\n\000\n", map { $_->[2] } @text;
+   my @highlighted = split /\n\^@\n/, highlight_one $type, $combined;
+
+   die "Failure: arity of split does not match joined"
+      if @highlighted != @text;
+
+   @highlighted
 }
 
 

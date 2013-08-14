@@ -165,7 +165,7 @@ sub verbatim {
 
    if (exists $self->{begin}) {
       push @{ $self->{verbatim} }, $paragraph;
-   } else {
+   } elsif ($paragraph !~ /^\s+$/) {
       $self->push (pre ($paragraph));
    }
 }
