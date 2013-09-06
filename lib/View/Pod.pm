@@ -212,6 +212,11 @@ sub interior_sequence {
            code ($_)
          } @seq_argument
       }
+      when ("N") {
+         map {
+           img ({ src => $_ })
+         } @seq_argument
+      }
       default {
          die "Unhandled sequence: $seq_command"
       }
