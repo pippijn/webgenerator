@@ -1,6 +1,7 @@
 package View::Pod;
 
 use common::sense;
+use feature 'switch';
 
 use base 'Pod::Parser';
 use XML::Generator ':pretty';

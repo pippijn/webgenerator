@@ -4,6 +4,8 @@ use common::sense;
 use namespace::autoclean;
 
 use Data::Dumper;
+use XML::Generator;
+
 use Markdent::Types qw(
    HeaderLevel Str Bool HashRef
    TableCellAlignment PosInt
@@ -12,6 +14,39 @@ use Markdent::Types qw(
 use Moose;
 
 with 'Markdent::Role::EventsAsMethods';
+
+my $X = new XML::Generator ':pretty';
+
+sub push {
+   my $self = shift;
+   push @{ $self->{current} }, @_;
+}
+
+sub pop {
+   my $self = shift;
+   @{ $self->{current} }
+}
+
+sub level {
+   my ($self) = @_;
+   my (undef, @kind) = @{ $self->{stack}[@{ $self->{stack} } - 1] };
+   @kind
+}
+
+sub push_level {
+   my ($self, @kind) = @_;
+   CORE::push @{ $self->{stack} }, [$self->{current}, @kind];
+   $self->{current} = [];
+}
+
+sub pop_level {
+   my $self = shift;
+   my ($prev, @kind) = @{ CORE::pop @{ $self->{stack} } };
+   my $xml = $self->{current};
+   $self->{current} = $prev;
+   $xml, @kind
+}
+
 
 sub start_document {
    my ($self) = @_;
@@ -22,55 +57,74 @@ sub end_document {
 }
 
 sub start_header {
-   my ($self) = @_;
+   my ($self, %args) = @_;
+   $self->push_level ("h" . ($args{level} + 1));
 }
 
 sub end_header {
    my ($self) = @_;
+   my ($xml, $level) = $self->pop_level;
+   $self->push ($X->$level (@$xml));
 }
 
 sub start_paragraph {
-   my ($self) = @_;
+   my ($self, %args) = @_;
+   $self->push_level ("p");
 }
 
 sub end_paragraph {
    my ($self) = @_;
+   my ($xml, $level) = $self->pop_level;
+   $self->push ($X->$level (@$xml));
 }
 
 sub start_link {
-   my ($self) = @_;
+   my ($self, %args) = @_;
+   $self->push_level ("a", $args{uri});
 }
 
 sub end_link {
-   my ($self) = @_;
+   my ($self, %args) = @_;
+   my ($xml, $level, $uri) = $self->pop_level;
+   $self->push ($X->$level ({ href => $uri }, @$xml));
 }
 
 sub start_code {
-   my ($self) = @_;
+   my ($self, %args) = @_;
+   $self->push_level ("code");
 }
 
 sub end_code {
    my ($self) = @_;
+   my ($xml, $level) = $self->pop_level;
+   $self->push ($X->$level (@$xml));
 }
 
 sub start_unordered_list {
-   my ($self) = @_;
+   my ($self, %args) = @_;
+   $self->push_level ("ul");
 }
 
 sub end_unordered_list {
    my ($self) = @_;
+   my ($xml, $level) = $self->pop_level;
+   $self->push ($X->$level (@$xml));
 }
 
 sub start_list_item {
    my ($self) = @_;
+   $self->push_level ("li");
 }
 
 sub end_list_item {
    my ($self) = @_;
+   my ($xml, $level) = $self->pop_level;
+   $self->push ($X->$level (@$xml));
 }
 
 sub text {
-   my ($self) = @_;
+   my ($self, %args) = @_;
+   $self->push ($args{text});
 }
 
 1
