@@ -129,7 +129,13 @@ sub text {
 
 sub image {
    my ($self, %args) = @_;
-   $self->push ($X->img ({ alt => $args{alt_text}, src => $args{uri} }));
+
+   my ($alt, $href) = split /\|/, $args{alt_text}, 2;
+   $self->push ($X->img ({ alt => $alt, src => $args{uri} }));
+
+   if ($href) {
+      $self->push ($X->a ({ href => $href }, $self->pop));
+   }
 }
 
 1
