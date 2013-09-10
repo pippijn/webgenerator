@@ -1,7 +1,7 @@
 package View::Pod;
 
-use common::sense;
 use feature 'switch';
+use common::sense;
 
 use base 'Pod::Parser';
 use XML::Generator ':pretty';
@@ -187,11 +187,21 @@ sub interior_sequence {
 
    given ($seq_command) {
       when ("L") {
-         map {
-           my ($title, $link) = split /\|/, $_, 2;
-           $link ||= $title;
-           a ({ href => $link }, $title)
-         } @seq_argument
+         my $title = shift @seq_argument;
+         my $link  = shift @seq_argument;
+
+         if (@seq_argument) {
+            die "Invalid arguments: @seq_argument";
+         }
+
+         if (not defined $link) {
+            ($title, $link) = split /\|/, $title, 2;
+            $link ||= $title;
+         } else {
+            (undef, $link) = split /\|/, $link, 2;
+         }
+
+         a ({ href => $link }, $title)
       }
       when ("I") {
          map {

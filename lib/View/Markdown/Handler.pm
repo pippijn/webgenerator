@@ -127,4 +127,9 @@ sub text {
    $self->push ($args{text});
 }
 
+sub image {
+   my ($self, %args) = @_;
+   $self->push ($X->img ({ alt => $args{alt_text}, src => $args{uri} }));
+}
+
 1
