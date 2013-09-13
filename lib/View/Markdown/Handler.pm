@@ -1,7 +1,8 @@
 package View::Markdown::Handler;
 
-use common::sense;
-use namespace::autoclean;
+use feature 'switch';
+#use common::sense;
+#use namespace::autoclean;
 
 use Data::Dumper;
 use XML::Generator;
@@ -102,13 +103,28 @@ sub end_emphasis {
 
 sub start_code {
    my ($self, %args) = @_;
-   $self->push_level ("code");
+   given ($args{delimiter}) {
+      when ('`') {
+         $self->push_level ("code");
+      }
+      when ('```') {
+         $self->push_level ("pre");
+      }
+      default {
+         die "Unknown delimiter: $args{delimiter}"
+      }
+   }
 }
 
 sub end_code {
    my ($self) = @_;
-   my ($xml, $level) = $self->pop_level;
-   $self->push ($X->$level (@$xml));
+   my ($xml, $level, @args) = $self->pop_level;
+   $self->push ($X->$level (@args, @$xml));
+}
+
+sub code_block {
+   my ($self, %args) = @_;
+   $self->push ($X->pre ($args{code}));
 }
 
 sub start_unordered_list {

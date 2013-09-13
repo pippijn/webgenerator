@@ -5,9 +5,9 @@ pre.code-dark {
    white-space: pre;
 }
 
-pre.code-block, code {
+pre, code {
    font: 90% DejaVu Sans Mono, monospace;
-   white-space: pre;
+   white-space: pre-wrap;
 }
 
  div#code0
