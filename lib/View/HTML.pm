@@ -38,7 +38,7 @@ sub menu {
          $retval = a (
             ($cur eq $path . $submenu->[0]
                ? { id => "actmenu" }
-               : { href => "$path$submenu->[0]/" }
+               : { href => "$path$submenu->[0]" }
             ),
             $submenu->[1],
             $retval
