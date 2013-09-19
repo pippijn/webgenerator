@@ -4,7 +4,7 @@ THIS	:= $(dir $(lastword $(MAKEFILE_LIST)))
 DEPEND	:= $(THIS)generator $(shell find $(THIS)lib -type f) config.pm
 
 # All html pages.
-HTML	= $(shell find home -name "*.html")
+HTML	= $(shell find home -name "*.html" -or -name "*.xhtml")
 
 build: $(DEPEND)
 	$< $(FLAGS)
