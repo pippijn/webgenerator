@@ -6,6 +6,7 @@ use common::sense;
 use base 'Pod::Parser';
 use XML::Generator ':pretty';
 use Data::Dumper;
+use View;
 
 
 sub push {
@@ -164,10 +165,12 @@ sub command {
 sub verbatim {
    my ($self, $paragraph, $line_num) = @_;
 
+   View::normalise $paragraph;
+
    if (exists $self->{begin}) {
       push @{ $self->{verbatim} }, $paragraph;
    } elsif ($paragraph !~ /^\s+$/) {
-      $self->push (pre ($paragraph));
+      $self->push (pre ({ class => 'verbatim' }, $paragraph));
    }
 }
 

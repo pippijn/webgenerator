@@ -1,6 +1,7 @@
 package View::VIM;
 
 use common::sense;
+use View;
 
 sub highlight_one {
    my ($type, $text) = @_;
@@ -39,25 +40,10 @@ sub highlight_one {
    $data
 }
 
-
 sub highlight {
    my ($type, @text) = @_;
 
-   for (@text) {
-      die "No tabs supported" if /\t/;
-
-      my $indent = 128;
-      for (split "\n", $_->[2]) {
-         if (/^( +)[^ ]/) {
-            my $spaces = length $1;
-            $indent = $spaces < $indent ? $spaces : $indent;
-         }
-      }
-
-      $indent = ' ' x $indent;
-      $_->[2] =~ s/(?:^\n*$indent|(\n)$indent)/$1/g;
-      $_->[2] =~ s/\n+$//g;
-   }
+   View::normalise $_->[2] for @text;
 
    my $combined = join "\n\000\n", map { $_->[2] } @text;
    my @highlighted = split /\n\^@\n/, highlight_one $type, $combined;

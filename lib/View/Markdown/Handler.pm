@@ -6,6 +6,7 @@ use feature 'switch';
 
 use Data::Dumper;
 use XML::Generator;
+use View;
 
 use Markdent::Types qw(
    HeaderLevel Str Bool HashRef
@@ -124,12 +125,14 @@ sub end_code {
 
 sub code_block {
    my ($self, %args) = @_;
-   $self->push ($X->pre ($args{code}));
+   View::normalise $args{code};
+   $self->push ($X->pre ({ class => 'code-block' }, $args{code}));
 }
 
 sub preformatted {
    my ($self, %args) = @_;
-   $self->push ($X->pre ($args{text}));
+   View::normalise $args{text};
+   $self->push ($X->pre ({ class => 'verbatim' }, $args{text}));
 }
 
 sub start_unordered_list {

@@ -25,6 +25,10 @@ pre {
    display: none;
 }
 
+pre.verbatim {
+	margin-left: 18px;
+}
+
 pre.code-block {
 	margin: 0 15px 18px 10px;
    padding: 1em;
