@@ -210,6 +210,11 @@ timing {
       for (@wrappers) {
          my ($ext) = /(\w+)\.tt$/;
 
+         if ($page !~ /index$/) {
+            mkdir "home/$page";
+            $page .= "/index";
+         }
+
          open my $fh, '>', "home/$page.$ext"
             or die "home/$page.$ext: $!";
          $template->process ($_, $vars, $fh);

@@ -127,6 +127,11 @@ sub code_block {
    $self->push ($X->pre ($args{code}));
 }
 
+sub preformatted {
+   my ($self, %args) = @_;
+   $self->push ($X->pre ($args{text}));
+}
+
 sub start_unordered_list {
    my ($self, %args) = @_;
    $self->push_level ("ul");
