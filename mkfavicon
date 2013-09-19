@@ -7,6 +7,9 @@ LOGO="content/logo.png"
 SIZES="16 24 32 57 72 96"
 
 test -f $LOGO || exit 0
+if test -f content/favicon.ico; then
+   exit 0
+fi
 
 convert $LOGO						\
    -format 'roundrectangle 0,0 %[fx:w],%[fx:h] 64,64'	\
