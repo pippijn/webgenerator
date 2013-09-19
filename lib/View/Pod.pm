@@ -165,11 +165,10 @@ sub command {
 sub verbatim {
    my ($self, $paragraph, $line_num) = @_;
 
-   View::normalise $paragraph;
-
    if (exists $self->{begin}) {
       push @{ $self->{verbatim} }, $paragraph;
    } elsif ($paragraph !~ /^\s+$/) {
+      View::normalise $paragraph;
       $self->push (pre ({ class => 'verbatim' }, $paragraph));
    }
 }
