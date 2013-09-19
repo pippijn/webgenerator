@@ -70,16 +70,16 @@ sub command {
 
    given ($command) {
       when ("head1") {
-         $self->push (h2 ($paragraph))
+         $self->push (h2 ($self->interpolate ($paragraph)))
       }
       when ("head2") {
-         $self->push (h3 ($paragraph))
+         $self->push (h3 ($self->interpolate ($paragraph)))
       }
       when ("head3") {
-         $self->push (h4 ($paragraph))
+         $self->push (h4 ($self->interpolate ($paragraph)))
       }
       when ("head4") {
-         $self->push (h5 ($paragraph))
+         $self->push (h5 ($self->interpolate ($paragraph)))
       }
       when ("for") {
          $self->push ($self->format (split /\s+/, $paragraph))
@@ -135,7 +135,7 @@ sub command {
       when ("end") {
          given (my $begin = delete $self->{begin}) {
             when ("code") {
-               my $xml = code ();
+               my $xml  = code ("to be filled");
                my $args = delete $self->{language};
                my $code = delete $self->{verbatim};
 
