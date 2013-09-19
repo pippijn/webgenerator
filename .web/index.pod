@@ -1,0 +1,6 @@
+=head1 Web generator
+
+This Perl script is used to generate this website as well as the Xinutec
+homepage.
+
+L<Git repository|https://github.com/pippijn/webgenerator>

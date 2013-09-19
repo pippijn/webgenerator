@@ -74,14 +74,21 @@ my @bugs;
 if ($ARGV[0] eq '--projects') {
    shift @ARGV;
 
-   for (glob "../../../*/*/.web") {
+   my $BASE = "../../..";
+
+   my @webs;
+   push @webs, glob "$BASE/*/*/.web";
+   push @webs, glob "$BASE/*/*/*/.web";
+
+   for (@webs) {
       local $dir = abs_path $_;
-      local $prefix = 'projects/' . (m|([^/]+/[^/]+)/\.web$|)[0];
+      local $prefix = 'projects/' . (m|$BASE/(.+)/\.web$|)[0];
 
       find \&link_file, $_;
    }
 
-   @bugs = glob "../../../*/*/bugs";
+   push @bugs, glob "../../../*/*/bugs";
+   push @bugs, glob "../../../*/*/*/bugs";
 }
 
 
