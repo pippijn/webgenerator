@@ -1,19 +1,19 @@
 pre.code-dark {
-   background-color: #2e2e2e;
-   color: #fff;
-   font: 90% DejaVu Sans Mono, monospace;
-   white-space: pre;
+	background-color: #2e2e2e;
+	color: #fff;
+	font: 90% DejaVu Sans Mono, monospace;
+	white-space: pre;
 }
 
 pre, code {
-   font: 90% DejaVu Sans Mono, monospace;
+	font: 90% DejaVu Sans Mono, monospace;
 }
 
 pre {
-   white-space: pre-wrap;
+	white-space: pre-wrap;
 }
 
- div#code0
+div#code0
 ,div#code1
 ,div#code2
 ,div#code3
@@ -22,7 +22,7 @@ pre {
 ,div#code6
 ,div#code7
 {
-   display: none;
+	display: none;
 }
 
 pre.verbatim {
@@ -31,10 +31,10 @@ pre.verbatim {
 
 pre.code-block {
 	margin: 0 15px 18px 10px;
-   padding: 1em;
-   color: #ffffff;
-   background-color: #262626;
-   white-space: pre-wrap;
+	padding: 1em;
+	color: #ffffff;
+	background-color: #262626;
+	white-space: pre-wrap;
 }
 
 .Comment { color: #af5f00; font-style: italic; }

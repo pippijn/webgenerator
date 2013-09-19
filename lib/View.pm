@@ -8,7 +8,7 @@ sub normalise {
 
       my $indent = 128;
       for (split "\n", $_) {
-         if (/^( +)[^ ]/) {
+         if (/^( *)[^ ]/) {
             my $spaces = length $1;
             $indent = $spaces < $indent ? $spaces : $indent;
          }

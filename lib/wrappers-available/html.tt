@@ -27,7 +27,7 @@
 		</div> 
 
 		<div id="footer"> 
-			<div id="copyright"><a href="/home/contact">Copyright &copy; 2007-2013 Pippijn van Steenhoven</a></div> 
+			<div id="copyright"><a href="/home/contact">Copyright &copy; 2007-2013 [% copyright %]</a></div> 
 			<div id="updated">Last updated [% updated %]</div> 
 		</div> 
 	</body> 
