@@ -5,8 +5,8 @@
 		<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8"/> 
 		<meta http-equiv="content-style-type" content="text/css"/> 
 		<meta name="description" content="[% name %] - [% title %]"/> 
-		<link rel="stylesheet" href="/home/css/home.css" type="text/css" title="Clean Blue" media="screen"/> 
-		<link rel="shortcut icon" type="image/x-icon" href="/home/favicon.ico"/>
+		<link rel="stylesheet" href="/home/css/home.css" type="text/css" title="Default" media="screen"/> 
+		<link rel="icon" type="image/x-icon" href="/home/favicon.ico"/>
 	</head> 
 
 	<body> 
