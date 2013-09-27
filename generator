@@ -206,6 +206,7 @@ timing {
 
       my $vars = {
          %$stash,
+         target  => $TARGET,
          title   => $title,
          menubar => (View::HTML::menu "/$TARGET/$cur", $stash->{menubar}, "/$TARGET/"),
          content => $content,
