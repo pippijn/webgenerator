@@ -1,19 +1,23 @@
+ifeq ($(TARGET),)
+$(error Define TARGET, first)
+endif
+
 THIS	:= $(dir $(lastword $(MAKEFILE_LIST)))
 
 # Generator script and its dependencies.
 DEPEND	:= $(THIS)generator $(shell find $(THIS)lib -type f) config.pm
 
 # All html pages.
-HTML	= $(shell find home -name "*.html" -or -name "*.xhtml")
+HTML	= $(shell find $(TARGET) -name "*.html" -or -name "*.xhtml")
 
 build: $(DEPEND)
-	$< $(FLAGS)
+	$< $(TARGET) $(FLAGS)
 	$(THIS)mkfavicon
-	find home -type f -exec chmod 0644 {} ';'
-	find home -type d -exec chmod 0755 {} ';'
+	find $(TARGET) -type f -exec chmod 0644 {} ';'
+	find $(TARGET) -type d -exec chmod 0755 {} ';'
 	$(MAKE) post-build
 
-home/%.txt: staging/%.pod
+$(TARGET)/%.txt: staging/%.pod
 	pod2text $< $@
 
 post-build:

@@ -20,6 +20,11 @@ use View::VIM;
 
 $Data::Dumper::Indent = 1;
 
+my $TARGET = shift @ARGV
+   or die "Usage: generator <target> [--projects]";
+die "target cannot be 'content'" if $TARGET eq 'content';
+die "target cannot be 'staging'" if $TARGET eq 'staging';
+
 #####################################################################
 # :: Timing code.
 #####################################################################
@@ -40,7 +45,7 @@ sub timing (&@) {
 #####################################################################
 
 my $PWD = abs_path '.';
-remove_tree 'staging', 'home';
+remove_tree 'staging', $TARGET;
 mkdir 'staging';
 
 our $dir;
@@ -134,9 +139,9 @@ timing {
 
       } elsif (-d) {
 
-         # Make directory in home/
+         # Make directory in $TARGET/
          my $name = $File::Find::name;
-         $name =~ s/^staging/home/;
+         $name =~ s/^staging/$TARGET/;
 
          mkdir "$PWD/$name" or die $!;
 
@@ -144,7 +149,7 @@ timing {
 
          # Just copy it to the target directory.
          my $name = $File::Find::name;
-         $name =~ s/^staging/home/;
+         $name =~ s/^staging/$TARGET/;
 
          system "cp", $_, "$PWD/$name";
 
@@ -202,7 +207,7 @@ timing {
       my $vars = {
          %$stash,
          title   => $title,
-         menubar => (View::HTML::menu "/home/$cur", $stash->{menubar}, '/home/'),
+         menubar => (View::HTML::menu "/$TARGET/$cur", $stash->{menubar}, "/$TARGET/"),
          content => $content,
          updated => (Date::Format::time2str "%C", (stat $_)[9]),
       };
@@ -211,12 +216,12 @@ timing {
          my ($ext) = /(\w+)\.tt$/;
 
          #if ($page !~ /index$/) {
-            #mkdir "home/$page";
+            #mkdir "$TARGET/$page";
             #$page .= "/index";
          #}
 
-         open my $fh, '>', "home/$page.$ext"
-            or die "home/$page.$ext: $!";
+         open my $fh, '>', "$TARGET/$page.$ext"
+            or die "$TARGET/$page.$ext: $!";
          $template->process ($_, $vars, $fh);
       }
    }
@@ -230,9 +235,10 @@ timing {
 timing {
    for my $bug (@bugs) {
       my ($project) = $bug =~ m|/(\w+/\w+)/bugs$|;
-      my $output = abs_path "home/projects/$project/bugs";
+      my $output = abs_path "$TARGET/projects/$project/bugs";
 
       local $CWD = $bug;
-      system "ditz", "html", $output;
+      system ("ditz", "html", $output) == 0
+         or die "ditz failed to execute";
    }
 } "Ditz bug reports" if @bugs;
