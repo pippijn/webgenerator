@@ -1,8 +1,8 @@
 package View::Markdown::Handler;
 
 use feature 'switch';
-#use common::sense;
-#use namespace::autoclean;
+use common::sense;
+use namespace::autoclean;
 
 use Data::Dumper;
 use XML::Generator;
@@ -126,7 +126,16 @@ sub end_code {
 sub code_block {
    my ($self, %args) = @_;
    View::normalise $args{code};
-   $self->push ($X->pre ({ class => 'code-block' }, $args{code}));
+
+   my $xml;
+   if (exists $args{language}) {
+      $xml = $X->code ("to be filled");
+      CORE::push @{ $self->{highlight}{lc $args{language}} }, [$xml, [], $args{code}];
+   } else {
+      $xml = $X->pre ({ class => 'code-block' }, $args{code});
+   }
+
+   $self->push ($xml);
 }
 
 sub preformatted {
@@ -143,6 +152,7 @@ sub start_unordered_list {
 sub end_unordered_list {
    my ($self) = @_;
    my ($xml, $level) = $self->pop_level;
+   die unless $level eq "ul";
    $self->push ($X->$level (@$xml));
 }
 
@@ -154,6 +164,7 @@ sub start_list_item {
 sub end_list_item {
    my ($self) = @_;
    my ($xml, $level) = $self->pop_level;
+   die unless $level eq "li";
    $self->push ($X->$level (@$xml));
 }
 

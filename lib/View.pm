@@ -4,7 +4,11 @@ use common::sense;
 
 sub normalise {
    for (@_) {
-      die "No tabs supported" if /\t/;
+      s/^\t/        /;
+      s/^( {8})\t/$1        /;
+      s/^( {16})\t/$1        /;
+      s/^( {24})\t/$1        /;
+      die "Only 4 leading tabs supported" if /^\s*\t/;
 
       my $indent = 128;
       for (split "\n", $_) {

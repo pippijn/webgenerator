@@ -23,8 +23,10 @@ sub new {
 
 sub parse {
    my ($self, $file) = @_;
+   $handler->{highlight} = delete $self->{highlight};
    $parser->parse (markdown => do { local $/; open my $fh, '<', $file or die $!; <$fh> });
    $self->{current} = delete $handler->{current};
+   $self->{highlight} = delete $handler->{highlight};
 }
 
 
