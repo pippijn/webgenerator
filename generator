@@ -60,8 +60,10 @@ sub link_file {
    if (-d) {
       make_path $file;
    } else {
+      warn "Source file does not exist: $abspath" and return
+         unless -f $abspath;
       symlink $abspath, $file
-         or die "Could not link $file: $!";
+         or die "Could not link\n< $abspath\n> $file\n: $!";
    }
 }
 
