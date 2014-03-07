@@ -51,7 +51,7 @@ mkdir 'staging';
 our $dir;
 our $prefix;
 sub link_file {
-   my $abspath = abs_path $_;
+   my $abspath = $File::Find::name;
    my ($relpath) = $abspath =~ /^$dir(.+)/;
 
    my $file = "$PWD/staging/$prefix$relpath";
@@ -63,14 +63,14 @@ sub link_file {
       warn "Source file does not exist: $abspath" and return
          unless -f $abspath;
       symlink $abspath, $file
-         or die "Could not link\n< $abspath\n> $file\n: $!";
+         or die "Could not link\n   $abspath\nto $file\nerror: $!";
    }
 }
 
 # First, link common files to the staging directory.
 for (__DIR__ . '/content') {
    local $dir = abs_path $_;
-   find \&link_file, $_;
+   find \&link_file, $dir;
 }
 
 
@@ -91,7 +91,10 @@ if ($ARGV[0] eq '--projects') {
       local $dir = abs_path $_;
       local $prefix = 'projects/' . (m|$BASE/(.+)/\.web$|)[0];
 
-      find \&link_file, $_;
+      find {
+         wanted => \&link_file,
+         follow => 1,
+      }, $dir;
    }
 
    push @bugs, glob "../../../*/*/bugs";
@@ -102,7 +105,7 @@ if ($ARGV[0] eq '--projects') {
 # Finally, link the local files and overrides.
 for ('content') {
    local $dir = abs_path $_;
-   find \&link_file, $_;
+   find \&link_file, $dir;
 }
 
 
