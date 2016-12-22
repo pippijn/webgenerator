@@ -102,6 +102,18 @@ sub end_emphasis {
    $self->push ($X->$level ({ href => $uri }, @$xml));
 }
 
+sub start_strong {
+   my ($self, %args) = @_;
+   $self->push_level ("b", $args{uri});
+}
+
+sub end_strong {
+   my ($self, %args) = @_;
+   my ($xml, $level, $uri) = $self->pop_level;
+   $self->push ($X->$level ({ href => $uri }, @$xml));
+}
+
+
 sub start_code {
    my ($self, %args) = @_;
    given ($args{delimiter}) {
