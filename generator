@@ -216,6 +216,7 @@ timing {
          menubar => (View::HTML::menu "/$TARGET/$cur", $stash->{menubar}, "/$TARGET/"),
          content => $content,
          updated => (Date::Format::time2str "%C", (stat $_)[9]),
+         modification_year => (Date::Format::time2str "%Y", (stat $_)[9]),
       };
 
       for (@wrappers) {
