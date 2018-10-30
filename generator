@@ -194,7 +194,7 @@ for my $lang (sort keys %highlight) {
 
 timing {
    my $template = new Template { ABSOLUTE => 1 };
-   my $stash = do "config.pm";
+   my $stash = do "config.pm" or die "$CWD/config.pm: $!";
    my @wrappers = glob (__DIR__ . "/lib/wrappers-enabled/*.tt");
 
    for (keys %structure) {
