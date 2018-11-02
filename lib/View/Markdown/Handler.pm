@@ -74,8 +74,14 @@ sub start_paragraph {
    $self->push_level ("p");
 }
 
+sub end_html_tag;
 sub end_paragraph {
    my ($self) = @_;
+   my @level = $self->level;
+
+   # XXX in case of closing html tag, end_paragraph is called instead???
+   return end_html_tag @_ if $level[0] =~ m|^/|;
+
    my ($xml, $level) = $self->pop_level;
    $self->push ($X->$level (@$xml));
 }
@@ -113,6 +119,21 @@ sub end_strong {
    $self->push ($X->$level (@$xml));
 }
 
+# XXX: only handles <foo bar="bleh"></foo>, not <foo> or <foo/>
+# I'm not sure how to detect those.
+sub start_html_tag {
+   my ($self, %args) = @_;
+
+   return end_html_tag @_ if $args{tag} =~ m|^/|;
+   $self->push_level ($args{tag}, $args{attributes});
+}
+
+sub end_html_tag {
+   my ($self, %args) = @_;
+   my ($xml, $level, $attributes) = $self->pop_level;
+
+   $self->push ($X->$level($attributes, @$xml));
+}
 
 sub start_code {
    my ($self, %args) = @_;
