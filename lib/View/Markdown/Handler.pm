@@ -93,24 +93,24 @@ sub end_link {
 
 sub start_emphasis {
    my ($self, %args) = @_;
-   $self->push_level ("em", $args{uri});
+   $self->push_level ("em");
 }
 
 sub end_emphasis {
    my ($self, %args) = @_;
    my ($xml, $level, $uri) = $self->pop_level;
-   $self->push ($X->$level ({ href => $uri }, @$xml));
+   $self->push ($X->$level (@$xml));
 }
 
 sub start_strong {
    my ($self, %args) = @_;
-   $self->push_level ("b", $args{uri});
+   $self->push_level ("b");
 }
 
 sub end_strong {
    my ($self, %args) = @_;
    my ($xml, $level, $uri) = $self->pop_level;
-   $self->push ($X->$level ({ href => $uri }, @$xml));
+   $self->push ($X->$level (@$xml));
 }
 
 
