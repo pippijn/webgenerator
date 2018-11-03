@@ -310,3 +310,7 @@ ul {
 	text-align: center;
 	margin-bottom: 10px;
 }
+
+asciinema-player {
+  padding: 1em;
+}
